@@ -77,4 +77,4 @@ def writemsg(msg):
         c.writerows(csv_)
         f.close()
 
-server.run("0.0.0.0", 10081, debug=True)
+server.run("0.0.0.0", 10081)
