@@ -5,6 +5,10 @@ import csv
 
 
 server = Flask(__name__)
+with open("users.csv", "w+") as f:
+    f.close()
+with open("message.csv", "w+") as f:
+    f.close()
 
 
 @server.route("/")
