@@ -2,6 +2,8 @@ from flask import Flask, request
 from markupsafe import escape
 from json import dumps, loads
 import csv
+from sys import argv
+from os import path
 
 
 server = Flask(__name__)
@@ -81,4 +83,20 @@ def writemsg(msg):
         c.writerows(csv_)
         f.close()
 
-server.run("0.0.0.0", 10081)
+if not path.exists("serverprofile.json"):
+    with open("serverprofile.json", "w+") as f:
+        f.write(dumps({
+            "host": "0.0.0.0",
+            "port":10081,
+            "ssl": False, 
+            "ssl_crt": "", 
+            "ssl_key": ""
+        }))
+profile = None
+with open("serverprofile.json", "r") as f:
+    profile = loads(f.read())
+
+if profile["ssl"]:
+    server.run(profile["host"], profile["port"], ssl_context=(profile["ssl_crt"], profile["ssl_key"]))
+else:
+    server.run(profile["host"], profile["port"])
