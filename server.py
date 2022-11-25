@@ -7,10 +7,12 @@ from os import path
 
 
 server = Flask(__name__)
-with open("users.csv", "w+") as f:
-    f.close()
-with open("message.csv", "w+") as f:
-    f.close()
+if not path.exists("users.csv"):
+    with open("users.csv", "w+") as f:
+        f.close()
+if not path.exists("message.csv"):
+    with open("message.csv", "w+") as f:
+        f.close()
 
 
 @server.route("/")
@@ -63,7 +65,10 @@ def getmsg(msgamount):
         c = csv.reader(f)
         for row in c:
             csv_.append(row)
-    return dumps(csv_[-101:-101+msgamount])
+    if -len(csv_) + msgamount >= 0:
+        return dumps(csv_[len(csv_)-1:0:-1])
+    else:
+        return dumps(csv_[len(csv_)-1:len(csv_)-1-msgamount:-1])
 
 def writemsg(msg):
     csv_ = []
@@ -97,6 +102,6 @@ with open("serverprofile.json", "r") as f:
     profile = loads(f.read())
 
 if profile["ssl"]:
-    server.run(profile["host"], profile["port"], ssl_context=(profile["ssl_crt"], profile["ssl_key"]))
+    server.run(profile["host"], profile["port"], debug=True, ssl_context=(profile["ssl_crt"], profile["ssl_key"]))
 else:
     server.run(profile["host"], profile["port"])

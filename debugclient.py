@@ -14,7 +14,7 @@ if not path.exists("clientprofile.json"):
             "username": username,
             "passwd": passwd
         }))
-        reg = requests.post("%s/reg" % host, json={"username": username, "passwd": passwd})
+        reg = requests.post("%s/reg" % host, json={"username": username, "passwd": passwd}, verify=False)
         print(reg.content)
 
 with open("clientprofile.json", "r") as f:
@@ -42,5 +42,10 @@ while True:
             "context": msg,
             "time": time.time()
         }
-        r = requests.post("%s/send" % profile["host"], json=package)
+        r = requests.post("%s/send" % profile["host"], json=package, verify=False)
         print(r.content)
+    elif "getmsg" in stin:
+        amount = int(stin.split(" ")[1])
+        r =  requests.get("%s/getmsg/%d" % (profile["host"], amount), verify=False)
+        context = loads(r.content)
+        print(context)
