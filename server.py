@@ -58,18 +58,29 @@ def send():
         f.close()
         return dumps({"status": 1})
 
-@server.route("/getmsg/<int:msgamount>")
+@server.route("/getmsg/<int:msgamount>", methods=["POST"])
 def getmsg(msgamount):
-    csv_ = []
-    with open("message.csv", "r") as f:
+    pack = request.json
+    with open("users.csv", "r") as f:
         c = csv.reader(f)
         for row in c:
-            csv_.append(row)
-    if -len(csv_) + msgamount >= 0:
-        return dumps(csv_[len(csv_)-1:0:-1])
-    else:
-        return dumps(csv_[len(csv_)-1:len(csv_)-1-msgamount:-1])
-
+            if row[0] != pack.get("username"):
+                continue
+            else:
+                if row[2] == "0":
+                    if row[1] == pack.get("passwd"):
+                        csv_ = []
+                        with open("message.csv", "r") as f:
+                            c = csv.reader(f)
+                            for row in c:
+                                csv_.append(row)
+                        if -len(csv_) + msgamount >= 0:
+                            return dumps(csv_[len(csv_)-1:0:-1])
+                        else:
+                            return dumps(csv_[len(csv_)-1:len(csv_)-1-msgamount:-1])
+                
+        return {"status": 1}
+    
 def writemsg(msg):
     csv_ = []
     with open("message.csv", "r") as f:
@@ -95,13 +106,14 @@ if not path.exists("serverprofile.json"):
             "port":10081,
             "ssl": False, 
             "ssl_crt": "",
-            "ssl_key": ""
+            "ssl_key": "",
+            "debug": False
         }))
 profile = None
 with open("serverprofile.json", "r") as f:
     profile = loads(f.read())
 
 if profile["ssl"]:
-    server.run(profile["host"], profile["port"], debug=True, ssl_context=(profile["ssl_crt"], profile["ssl_key"]))
+    server.run(profile["host"], profile["port"], debug=profile["debug"], ssl_context=(profile["ssl_crt"], profile["ssl_key"]))
 else:
-    server.run(profile["host"], profile["port"])
+    server.run(profile["host"], profile["port"], debug=profile["debug"])

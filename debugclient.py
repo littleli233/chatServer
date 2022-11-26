@@ -46,6 +46,10 @@ while True:
         print(r.content)
     elif "getmsg" in stin:
         amount = int(stin.split(" ")[1])
-        r =  requests.get("%s/getmsg/%d" % (profile["host"], amount), verify=False)
+        package = {
+            "username": profile["username"],
+            "passwd": profile["passwd"] 
+        }
+        r =  requests.post("%s/getmsg/%d" % (profile["host"], amount), json=package, verify=False)
         context = loads(r.content)
         print(context)
