@@ -94,7 +94,7 @@ if not path.exists("serverprofile.json"):
             "host": "0.0.0.0",
             "port":10081,
             "ssl": False, 
-            "ssl_crt": "", 
+            "ssl_crt": "",
             "ssl_key": ""
         }))
 profile = None
