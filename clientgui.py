@@ -41,7 +41,7 @@ def getmsg():
     msg_pass = None
     msg_pass_time = None
     while True:
-        sleep(1)
+        sleep(5)
         respones = requests.post("%s/getmsg/1" % profile["host"], json=package)
         msg = loads(respones.content)
         if msg[0][2] == msg_pass and msg[0][1] == msg_pass_time:
