@@ -31,7 +31,7 @@ def sendmsg():
         "time": time(),
         "context": entry.get()
     }
-    requests.post("%s/send" % profile["host"], json=package)
+    requests.post("%s/send" % profile["host"], json=package, verify=False)
 
 def getmsg():
     package = {
@@ -42,14 +42,17 @@ def getmsg():
     msg_pass_time = None
     while True:
         sleep(5)
-        respones = requests.post("%s/getmsg/1" % profile["host"], json=package)
-        msg = loads(respones.content)
-        if msg[0][2] == msg_pass and msg[0][1] == msg_pass_time:
+        response = requests.post("%s/getmsg/1" % profile["host"], json=package, verify=False)
+        msg = loads(response.content)
+        try:
             text.get("end")
-            continue
-        text.insert("end", "%s\n%s:%s\n" % (strftime("%Y-%m-%d %H:%M:%S", localtime(float(msg[0][1]))), msg[0][0], msg[0][2]))
-        msg_pass = msg[0][2]
-        msg_pass_time = msg[0][1]
+            if msg[0][2] == msg_pass and msg[0][1] == msg_pass_time:
+                continue
+            text.insert("end", "%s\n%s:%s\n" % (strftime("%Y-%m-%d %H:%M:%S", localtime(float(msg[0][1]))), msg[0][0], msg[0][2]))
+            msg_pass = msg[0][2]
+            msg_pass_time = msg[0][1]
+        except IndexError:
+            print("Get message failed")
 
 window = tk.Tk()
 window.title("chatClient")

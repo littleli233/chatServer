@@ -4,6 +4,7 @@ from json import dumps, loads
 import csv
 from sys import argv
 from os import path
+from time import time
 
 
 server = Flask(__name__)
@@ -12,7 +13,8 @@ if not path.exists("users.csv"):
         f.close()
 if not path.exists("message.csv"):
     with open("message.csv", "w+") as f:
-        f.close()
+        csv_ = csv.writer(f)
+        csv_.writerow(["server", time(), "欢迎使用聊天服务器"])
 
 
 @server.route("/")

@@ -8,6 +8,7 @@
 users.csv
 message.csv
 iptable.csv
+dist/
 clientprofile.json
 server.crt
 server.csr
