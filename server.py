@@ -65,7 +65,7 @@ def send():
         f.close()
         return dumps({"status": 1})
 
-"""
+
 @server.route("/getmsg/<int:msgamount>", methods=["POST"])
 def getmsg(msgamount):
     pack = request.json
@@ -88,7 +88,7 @@ def getmsg(msgamount):
                             return dumps(csv_[len(csv_)-1:len(csv_)-1-msgamount:-1])
                 
         return {"status": 1}
-        """
+
 @server.route("/getmsg-stream", methods=["POST"])
 def getmsg_stream():
     pack = request.json
