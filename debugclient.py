@@ -53,3 +53,11 @@ while True:
         r =  requests.post("%s/getmsg/%d" % (profile["host"], amount), json=package, verify=False)
         context = loads(r.content)
         print(context)
+    elif "streammsg" in stin:
+        package = {
+            "username": profile["username"],
+            "passwd": profile["passwd"] 
+        }
+        r = requests.post("%s/getmsg-stream" % profile["host"], json=package, stream=True)
+        for line in r.iter_lines():
+            print(line)

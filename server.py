@@ -1,10 +1,10 @@
-from flask import Flask, request
+from flask import Flask, request, Response
 from markupsafe import escape
 from json import dumps, loads
 import csv
 from sys import argv
 from os import path
-from time import time
+from time import time, sleep
 
 
 server = Flask(__name__)
@@ -20,6 +20,11 @@ if not path.exists("message.csv"):
 @server.route("/")
 def server_hello():
     return "server started"
+
+
+@server.route("/api-version")
+def api_version():
+    return "2"
 
 
 @server.route("/reg", methods=["POST"])
@@ -60,6 +65,7 @@ def send():
         f.close()
         return dumps({"status": 1})
 
+"""
 @server.route("/getmsg/<int:msgamount>", methods=["POST"])
 def getmsg(msgamount):
     pack = request.json
@@ -82,6 +88,36 @@ def getmsg(msgamount):
                             return dumps(csv_[len(csv_)-1:len(csv_)-1-msgamount:-1])
                 
         return {"status": 1}
+        """
+@server.route("/getmsg-stream", methods=["POST"])
+def getmsg_stream():
+    pack = request.json
+    with open("users.csv", "r") as f:
+        c = csv.reader(f)
+        for row in c:
+            if row[0] != pack.get("username"):
+                continue
+            else:
+                if row[2] == "0":
+                    if row[1] == pack.get("passwd"):
+                        return Response(action_getmsg(), mimetype="text")
+
+def action_getmsg():
+    pass_msg = None
+    while True:
+        csv_ = []
+        with open("message.csv", "r") as f:
+            c = csv.reader(f)
+            for row in c:
+                csv_.append(row)
+        sleep(1)
+        if csv_[-1] == pass_msg:
+            continue
+        else:
+            pass_msg = csv_[-1]
+            yield dumps(csv_[-1]) + "\n"
+        sleep(3)
+    
     
 def writemsg(msg):
     csv_ = []
@@ -109,7 +145,8 @@ if not path.exists("serverprofile.json"):
             "ssl": False, 
             "ssl_crt": "",
             "ssl_key": "",
-            "debug": False
+            "debug": False,
+            "allow_reg": True
         }))
 profile = None
 with open("serverprofile.json", "r") as f:
