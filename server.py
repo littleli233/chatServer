@@ -110,13 +110,9 @@ def action_getmsg():
             c = csv.reader(f)
             for row in c:
                 csv_.append(row)
-        sleep(1)
-        if csv_[-1] == pass_msg:
-            continue
-        else:
-            pass_msg = csv_[-1]
-            yield dumps(csv_[-1]) + "\n"
-        sleep(3)
+        sleep(0.1)
+        pass_msg = csv_[-1]
+        yield dumps(csv_[-1]) + "\n"
     
     
 def writemsg(msg):

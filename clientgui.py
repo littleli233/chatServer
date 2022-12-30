@@ -40,19 +40,21 @@ def getmsg():
     }
     msg_pass = None
     msg_pass_time = None
-    while True:
-        sleep(5)
-        response = requests.post("%s/getmsg/1" % profile["host"], json=package, verify=False)
-        msg = loads(response.content)
+    print("start getmsg")
+    response = requests.post("%s/getmsg-stream" % profile["host"], json=package, verify=False, stream=True)
+    for line in response.iter_lines():
+        msg = loads(line)
+        text.get("end")
         try:
-            text.get("end")
-            if msg[0][2] == msg_pass and msg[0][1] == msg_pass_time:
+            if msg[2] == msg_pass and msg[1] == msg_pass_time:
                 continue
-            text.insert("end", "%s\n%s:%s\n" % (strftime("%Y-%m-%d %H:%M:%S", localtime(float(msg[0][1]))), msg[0][0], msg[0][2]))
-            msg_pass = msg[0][2]
-            msg_pass_time = msg[0][1]
+            print(line)
+            text.insert("end", "%s\n%s:%s\n" % (strftime("%Y-%m-%d %H:%M:%S", localtime(float(msg[1]))), msg[0], msg[2]))
+            msg_pass = msg[2]
+            msg_pass_time = msg[1]
         except IndexError:
             print("Get message failed")
+
 
 window = tk.Tk()
 window.title("chatClient")
